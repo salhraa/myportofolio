@@ -190,3 +190,88 @@ h1, .brand {
         justify-content: flex-start;
     }
 }
+
+.karya-section {
+    padding: 4rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.karya-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    max-width: 650px;
+}
+
+.karya-gambar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    padding-left: 0.75rem;
+}
+
+.karya-block{
+    position: absolute;
+    top: 0.75rem;
+    left: 0;
+    width: 130px;
+    height: 130px;
+    background-color: var(--accent);
+    border-radius: var(--radius);
+    z-index: 0;
+}
+
+.karya {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 130px;
+    height: 130px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius);
+    border: 3px solid var(--ink);
+    flex-shrink: 0;
+}
+
+.karya-info{
+    position: relative;
+    z-index: 1;
+    flex: 1;
+}
+
+.karya-title{
+    font-family: "Space Grotesk", -apple-system, sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+}
+
+.caption{
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+@media (max-width: 600px){
+    .karya-gambar{
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding-left: 0;
+    }
+    .karya-block{
+        width: 100%;
+        max-width: 220px;
+        height: 180px;
+        top: 0.75rem;
+        left: 0.75rem;
+    }
+    .karya{
+        width: 100%;
+        max-width: 220px;
+        height: 180px;
+    }
+}
