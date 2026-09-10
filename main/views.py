@@ -1,6 +1,8 @@
 from django.shortcuts import render
 
 from main.models import Experience
+from .models import Hobby
+
 
 
 def show_main(request):
@@ -22,3 +24,10 @@ def show_experience(request):
         "experience_list": Experience.objects.all(),
     }
     return render(request, "experience.html", context)
+
+def show_hobbies(request):
+    hobbies = Hobby.objects.all()
+    context = {
+        'hobbies' : hobbies,
+    }
+    return render(request, 'hobbies.html', context)
