@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <<link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <header class="site-header">
@@ -21,76 +21,160 @@
             </nav>
         </div>
     </header>
+    {% block content %}
+   
+    <main class="pixel-main">
+        <section class="hobby-section" id="hobbies">
+            <div class="container">
 
-{% block content %}
-<main class="pixel-main">
-    <section class="hobby-section" id="hobbies">
-        <div class="container">
-            <div class="pixel-sticker sticker-star">⭐</div>
-            <div class="pixel-sticker sticker-heart">💖</div>
+                <h1 class="pixel-title">MY WORLD</h1>
 
-            <p class="section-kicker"> ✨</p>
-            <h1 class="pixel-title">MY WORLD</h1>
-            
-            <div class="hobby-grid">
-                {% for hobby in hobby_list %}
+                <div class="hobby-grid">
                     <article class="hobby-card">
-                        <div class="card-sticker">🎀</div>
+                        <span class="hobby-category-badge">Daily Package</span>
+                        <h2 class="pixel-subtitle">Arts</h2>
 
-                        <div class="hobby-card-header">
-                            <span class="hobby-category-badge">
-                                LVL.1 {{ hobby.get_category_display|upper }}
-                            </span>
-                            <h2 class="pixel-subtitle">{{ hobby.name }}</h2>
-                        </div>
-
-            
-                        <button type="button" class="pixel-btn" onclick="toggleHobbyDetail(this)">
-                            <span>[ UNLOCK FOTO ]</span> 📸
+                        <!-- UNLOCK -->
+                        <button
+                            type="button"
+                            id="unlockBtn"
+                            class="pixel-btn unlock-main-btn"
+                            onclick="unlockGallery()">
+                            [ UNLOCK ]
                         </button>
-                        <div class="hobby-detail-content hidden">
-                            {% if hobby.icon_or_image %}
-                                <div class="pixel-img-frame">
-                                    <img src="{{ hobby.icon_or_image }}" alt="{{ hobby.name }}" class="pixel-img">
-                                </div>
-                            {% else %}
-                                <div class="pixel-icon-placeholder">👾</div>
-                            {% endif %}
-                            
-                            <p class="hobby-description">
-                                {{ hobby.description }}
-                            </p>
-                            <span class="pixel-sparkle-tag">★ QUEST COMPLETED! ★</span>
-                        </div>
-                    </article>
-                {% empty %}
-                    <div class="pixel-empty-state">
-                        <div class="empty-pixel-art"> wait yahh</div>
-                        <p>...</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </section>
-</main>
 
-<script>
-    function toggleHobbyDetail(button) {
-        const card = button.closest('.hobby-card');
-        const detail = card.querySelector('.hobby-detail-content');
-        
-        detail.classList.toggle('hidden');
-        
-        if (detail.classList.contains('hidden')) {
-            button.innerHTML = '<span>[ UNLOCK FOTO ]</span> 📸';
-            button.classList.remove('active');
-        } else {
-            button.innerHTML = '<span>[ CLOSE DETAIL ]</span> 🙈';
-            button.classList.add('active');
-        }
+
+                        <!-- MENU ART -->
+                        <div id="artMenuList" class="art-menu-list" style="display: none;">
+
+                            <button
+                                type="button"
+                                class="pixel-btn art-item-btn"
+                                data-src="{% static 'img/river.jpeg' %}"
+                                data-title="Golden River"
+                                data-desc="Just go with the flow. The future is ours to build!"
+                                onclick="openArtPreviewFromBtn(this)">
+                                01
+                            </button>
+
+                            <button
+                                type="button"
+                                class="pixel-btn art-item-btn"
+                                data-src="{% static 'img/watched.jpeg' %}"
+                                data-title="Watched by Shadows"
+                                data-desc="Keep your inner flame burning!"
+                                onclick="openArtPreviewFromBtn(this)">
+                                02
+                            </button>
+
+                            <button
+                                type="button"
+                                class="pixel-btn art-item-btn"
+                                data-src="{% static 'img/see.jpeg' %}"
+                                data-title="What we see?"
+                                data-desc="Actually, I don't know what happened."
+                                onclick="openArtPreviewFromBtn(this)">
+                                03
+                            </button>
+
+                            <button
+                                type="button"
+                                class="pixel-btn close-btn"
+                                onclick="closeAllGallery()">
+                                [ CLOSE ] ✖
+                            </button>
+
+                        </div>
+
+
+                        <!-- ART PREVIEW -->
+                        <div
+                            id="artPreviewBox"
+                            class="art-preview-box"
+                            style="display: none;">
+
+                            <div class="cute-frame-header">
+                                <span class="cute-dot pink"></span>
+                                <span class="cute-dot yellow"></span>
+                                <span class="cute-dot green"></span>
+                            </div>
+
+                            <div class="cute-img-container">
+                                <img id="displayImage" src="" alt="Art Display" class="cute-img">
+                            </div>
+
+                            <div class="cute-caption-box">
+                                <h3 id="displayTitle" class="cute-art-title"></h3>
+                                <p id="displayDesc" class="cute-art-desc"></p>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="pixel-btn close-btn preview-close-btn"
+                                onclick="closeArtPreview()">
+                                [ CLOSE PREVIEW ] 
+                            </button>
+
+
+                        </div>
+
+                    </article>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+
+    <script>
+    function unlockGallery() {
+        // Hilangkan UNLOCK
+        document.getElementById('unlockBtn').style.display = 'none';
+
+        // BARU tampilkan 01, 02, 03, CLOSE
+        document.getElementById('artMenuList').style.display = 'block';
+
+        // Pastikan art belum muncul
+        document.getElementById('artPreviewBox').style.display = 'none';
     }
-</script>
-{% endblock %}
+
+
+    function openArtPreviewFromBtn(btn) {
+        const imgUrl = btn.dataset.src;
+        const title = btn.dataset.title;
+        const desc = btn.dataset.desc;
+
+        document.getElementById('displayImage').src = imgUrl;
+        document.getElementById('displayTitle').textContent = title;
+        document.getElementById('displayDesc').textContent = desc;
+
+        // Tampilkan art
+        document.getElementById('artPreviewBox').style.display = 'block';
+    }
+
+
+    function closeArtPreview() {
+        // Tutup art
+        document.getElementById('artPreviewBox').style.display = 'none';
+
+        document.getElementById('displayImage').src = '';
+    }
+
+
+    function closeAllGallery() {
+        // Sembunyikan menu 01, 02, 03, CLOSE
+        document.getElementById('artMenuList').style.display = 'none';
+
+        // Sembunyikan art
+        document.getElementById('artPreviewBox').style.display = 'none';
+
+        // Tampilkan UNLOCK lagi
+        document.getElementById('unlockBtn').style.display = 'block';
+    }
+    </script>
+
+    {% endblock %}
+
 
     <footer class="site-footer">
         <div class="container">
