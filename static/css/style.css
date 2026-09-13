@@ -47,6 +47,9 @@ h1, .brand, .pixel-title {
     letter-spacing: 1px;
 }
 
+.card-badge,
+.mini-title,
+.cute-art-title,
 .pixel-subtitle, 
 .pixel-btn, 
 .hobby-category-badge,
@@ -60,6 +63,7 @@ h1, .brand, .pixel-title {
     max-width: 960px;
     margin: 0 auto;
     padding: 0 1.5rem;
+    width: 100%
 }
 
 
@@ -266,154 +270,45 @@ h1, .brand, .pixel-title {
     box-shadow: var(--pixel-shadow-lg);
 }
 
-
-
-
-.karya-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
-    align-items: start; /* Supaya tinggi kartu menyesuaikan gambar masing-masing */
+main {
+    flex: 1;
 }
-
-
-.karya-gambar {
-    background: var(--bg-pink-light);
-    border: 3px solid var(--border-dark);
-    border-radius: 0px;
-    padding: 14px;
-    position: relative;
-    box-shadow: 6px 6px 0px var(--border-dark);
-    transition: all 0.2s ease;
-}
-
-
-img.karya {
-    width: 100%;
-    height: auto;
-    display: block;
-    border: 3px solid var(--border-dark);
-    border-radius: 0px;
-    box-shadow: 3px 3px 0px var(--border-dark);
-    background: #ffffff;
-    image-rendering: pixelated;
-    margin-top: 6px;
-}
-
-
-.karya-gambar:nth-child(1) {
-    transform: rotate(-1.5deg) translateY(-4px);
-}
-.karya-gambar:nth-child(1) .karya-block {
-    left: 12px;
-    background: var(--pink-accent);
-}
-
-
-.karya-gambar:nth-child(2) {
-    transform: rotate(2deg) translateY(6px);
-}
-.karya-gambar:nth-child(2) .karya-block {
-    right: 15px;
-    left: auto; 
-    background: #7bdff2; 
-    color: var(--border-dark);
-}
-
-
-.karya-gambar:nth-child(3) {
-    transform: rotate(-1deg) translateX(-4px);
-}
-.karya-gambar:nth-child(3) .karya-block {
-    left: 40%; 
-    background: #b5e2fa;
-    color: var(--border-dark);
-}
-
-
-.karya-gambar:hover {
-    transform: rotate(0deg) scale(1.02) translate(-2px, -2px);
-    box-shadow: 10px 10px 0px var(--border-dark);
-    background: #ffffff;
-    z-index: 10;
-}
-
-
-.karya-block {
-    position: absolute;
-    top: -12px;
-    border: 2px solid var(--border-dark);
-    padding: 2px 8px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.45rem;
-    box-shadow: 2px 2px 0px var(--border-dark);
-    z-index: 5;
-}
-
-.karya-block::before {
-    content: "ART";
-}
-
-
-.karya-info {
-    margin-top: 12px;
-    background: var(--bg-pink-soft);
-    border: 2px solid var(--border-dark);
-    padding: 10px;
-    box-shadow: 3px 3px 0px var(--border-dark);
-}
-
-.karya-title {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.68rem;
-    color: var(--border-dark);
-    line-height: 1.4;
-    margin-bottom: 6px;
-}
-
-.caption {
-    font-family: 'Fredoka', sans-serif;
-    font-size: 0.85rem;
-    color: var(--text-main);
-    font-style: italic;
-    line-height: 1.3;
-    border-top: 2px dashed var(--border-dark);
-    padding-top: 6px;
-}
-
-
 
 .experience-section {
-    padding: 3.5rem 0;
+    padding: 3.5rem 0 5rem;
 }
 
 .section-kicker {
     color: var(--bg-pink-soft);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     margin-bottom: 0.4rem;
+    text-transform: uppercase;
 }
 
 .experience-section h1 {
-    font-size: 3rem;
+    font-size: clamp(3rem, 6vw, 4.5rem);
     color: var(--bg-pink-light);
     text-shadow: 3px 3px 0px var(--border-dark);
     margin-bottom: 2rem;
+    line-height: 1;
 }
 
 .experience-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1.8rem;
 }
 
 .experience-card {
     padding: 1.5rem;
     background: var(--bg-pink-light);
-    border: 3px solid var(--border-dark);
+    border: 3.5px solid var(--border-dark);
     border-radius: var(--radius-soft);
     box-shadow: var(--pixel-shadow-lg);
-    position: relative;
     transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .experience-card:hover {
@@ -423,36 +318,61 @@ img.karya {
 }
 
 .experience-category {
-    color: var(--text-white);
-    background: var(--pink-accent);
-    padding: 4px 8px;
-    font-size: 0.5rem;
+    color: var(--border-dark);
+    background: #ffffff;
+    padding: 5px 10px;
+    font-size: 0.55rem;
     border: 2px solid var(--border-dark);
     border-radius: 6px;
     display: inline-block;
+    box-shadow: 2px 2px 0px var(--border-dark);
 }
 
 .experience-card h2 {
-    margin: 0.8rem 0 0.4rem;
-    font-size: 1.3rem;
+    margin: 1rem 0 0.5rem;
+    font-size: 1.4rem;
     color: var(--border-dark);
     font-weight: 700;
 }
 
 .experience-description {
     color: var(--text-muted);
-    font-size: 0.92rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
 }
 
-.experience-status {
-    margin-top: 1rem;
+.empty-state {
+    grid-column: 1 / -1;
+    background: var(--bg-pink-light);
+    border: 3.5px solid var(--border-dark);
+    border-radius: var(--radius-soft);
+    padding: 2.5rem;
+    text-align: center;
+    color: var(--text-muted);
     font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--border-dark);
-    background: var(--bg-pink-soft);
-    padding: 4px 8px;
-    border-radius: 6px;
-    display: inline-block;
-    border: 1.5px solid var(--border-dark);
+    box-shadow: var(--pixel-shadow-lg);
 }
+
+footer {
+    background: var(--bg-pink-soft);
+    border-top: 3.5px solid var(--border-dark);
+    padding: 1.5rem 0;
+    margin-top: auto;
+    text-align: center;
+    box-shadow: 0 -4px 0px rgba(0,0,0,0.2);
+}
+
+footer p {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem;
+    color: var(--border-dark);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .experience-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 
