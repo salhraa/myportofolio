@@ -1,7 +1,6 @@
 from django.shortcuts import render
 
-from main.models import Experience
-from .models import Hobby
+from main.models import Experience, Skill
 
 
 
@@ -25,9 +24,9 @@ def show_experience(request):
     }
     return render(request, "experience.html", context)
 
-def show_hobbies(request):
-    hobbies = Hobby.objects.all()
+def show_skill(request):
     context = {
-        'hobbies' : hobbies,
+        "name": "Salma Maharani",
+        "skill_list" : Skill.objects.all(),
     }
-    return render(request, 'hobbies.html', context)
+    return render(request, "skill.html", context)

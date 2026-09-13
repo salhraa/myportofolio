@@ -1,8 +1,9 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
 
 from main.models import Experience
+from main.models import Skill
 
 
 class MainTest(TestCase):
@@ -20,6 +21,7 @@ class MainTest(TestCase):
         self.assertTemplateUsed(response, "index.html")
         self.assertNotContains(response, self.experience.title)
         self.assertContains(response, f'href="{reverse("main:show_experience")}"')
+        self.assertContains(response, f'href="{reverse("main:show_skill")}"')
 
     def test_nonexistent_page_returns_404(self):
         response = self.client.get("/halaman-yang-tidak-ada/")
@@ -56,3 +58,30 @@ class MainTest(TestCase):
         self.assertFalse(self.experience.is_ongoing)
         self.assertContains(response, "Selesai")
         self.assertNotContains(response, "Sedang berlangsung")
+
+class SkillViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('main:show_skill')
+
+    def test_skill_url_and_template(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'skill.html')
+
+    def test_skill_empty_condition(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Belum ada skill yang ditambahkan.")
+
+    def test_skill_data_exists(self):
+        Skill.objects.create(
+            name="Art",
+            level="intermediate",
+            description="like to spend my free time drawing"
+        )
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Art")
+        self.assertContains(response, "Intermediate")
+        self.assertContains(response, "like to spend my free time drawing")
