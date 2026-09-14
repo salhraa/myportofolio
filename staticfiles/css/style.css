@@ -528,3 +528,104 @@ h1, .brand, .pixel-title {
         grid-template-areas: "identity" "photo" "details";
     }
 }
+
+
+
+.gallery-container {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: row; 
+    flex-wrap: wrap;  
+    gap: 10px;           
+    width: 100%;
+    box-sizing: border-box;
+    align-items: flex-start;
+}
+
+.art-card {
+    flex: 1;            
+    max-width: 32%;      
+    background: #ffffff;
+    border: 2px solid var(--border-dark, #1a1a1a);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 2px 2px 0px var(--border-dark, #1a1a1a);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}
+
+.photo-frame {
+    background: #fff0f5;
+    border: 1.5px solid var(--border-dark, #1a1a1a);
+    border-radius: 6px;
+    padding: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.frame-top {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 3px;
+}
+
+.dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    border: 1px solid var(--border-dark, #1a1a1a);
+}
+
+.dot-pink { background-color: #ff85a2; }
+.dot-yellow { background-color: #ffdf6d; }
+.dot-green { background-color: #7ae582; }
+
+.photo-wrapper {
+    background: #ffffff;
+    border: 1px solid var(--border-dark, #1a1a1a);
+    border-radius: 4px;
+    overflow: hidden;
+    width: 100%;
+    height: 80px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: inline-block;
+}
+
+.photo-wrapper img {
+    width: auto;
+    height: auto;
+    max-width: 220px;
+    max-height: 250px;
+    object-fit: cover;
+    display: block;
+}
+
+.art-info {
+    margin-top: 4px;
+    text-align: center;
+    max-width: 220px;
+}
+
+.art-title {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--border-dark, #1a1a1a);
+    margin: 0 0 2px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.art-desc {
+    font-size: 0.6rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

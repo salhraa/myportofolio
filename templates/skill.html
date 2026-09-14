@@ -38,6 +38,28 @@
                             <p class="experience-description">
                                 {{ skill.description }}
                             </p>
+                            {% if skill.artworks.all %}
+                                <dev class="gallery-container">
+                                    {% for art in skill.artworks.all %}
+                                        <div class="art-card">
+                                            <div class="photo-frame">
+                                                <div class="frame-top">
+                                                    <span class="dot dot-pink"></span>
+                                                    <span class="dot dot-yellow"></span>
+                                                    <span. class="dot dot-green"></span.>
+                                                </div>
+                                                <div class="photo-wrapper">
+                                                    <img src="{{ art.image_url }}" alt="{{ art.title }}">
+                                                </div>
+                                            </div>
+                                            <div class="art-info">
+                                                <h4 class="art-title">{{ art.title }}</h4>
+                                                <p class="art-desc">{{ art.description }}</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}    
+                                </dev>
+                            {% endif %}    
                         </article>
                     {% empty %}
                         <p class="empty-state">
