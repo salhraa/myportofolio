@@ -25,3 +25,11 @@ pemecahan masalah mandiri yang saya lakukan adalah dengan melihat code yang ada 
 migrate untuk mengeksekusi berkas migrasi yang belum dijalankan dan menerapkannya ke basis data.
 
 Tugas ini dikerjakan dengan menggunakan bantuan AI(gemini). Saya meminta arahan untuk mengedit css untuk menempatkan gambar di dalam bagian skill saya.
+
+art_skill = Skill.objects.get(name="Art")
+ Artwork.objects.create(
+    skill=art_skill,
+    title="Golden River to Tomorrow",
+    description="Just go with the flow. The future is ours to build., so let’s make it bright!.",
+    image_url="/static/img/river.jpeg"
+)
