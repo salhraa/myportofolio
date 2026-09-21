@@ -154,4 +154,5 @@ MAILERS = {
 }
 
 
-CSRF_TRUSTED_ORIGINS = ["<https://salma-maharani-myportofolio.pws.cs.ui.ac.id>", 'http://salma-maharani-myportofolio.pws.cs.ui.ac.id', ]
+CSRF_TRUSTED_ORIGINS = ["<https://salma-maharani-myportofolio.pws.cs.ui.ac.id>", 'http://salma-maharani-myportofolio.pws.cs.ui.ac.id', 'https://*.pws.cs.ui.ac.id', ]
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
