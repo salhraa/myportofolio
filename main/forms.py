@@ -1,6 +1,6 @@
 from django.forms import ModelForm, Select, TextInput, Textarea, NumberInput
-from main.models import Skill
-from main.models import Education
+from main.models import Skill, Education, Experience
+from django import forms
 
 
 class SkillForm(ModelForm):
@@ -87,4 +87,12 @@ class EducationForm(ModelForm):
                     "rows": 3,
                 }
             ),
+        }
+
+class ExperienceForm(forms.ModelForm):
+    class Meta:
+        model = Experience
+        fields = ['title', 'category', 'description', 'thumbnail', 'status', 'ended_at']
+        widgets = {
+            'ended_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
