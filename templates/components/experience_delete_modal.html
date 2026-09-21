@@ -1,0 +1,23 @@
+
+<button type="button" class="btn-pixel btn-danger" onclick="document.getElementById('delete-modal-{{ experience.id }}').showModal()">
+    Hapus
+</button>
+
+<dialog id="delete-modal-{{ experience.id }}" class="skill-delete-modal">
+    <div class="skill-delete-modal__backdrop" onclick="document.getElementById('delete-modal-{{ experience.id }}').close()"></div>
+    
+    <div class="skill-delete-modal__content">
+        <button type="button" class="skill-delete-modal__close" onclick="document.getElementById('delete-modal-{{ experience.id }}').close()">&times;</button>
+        
+        <h2>Hapus Experience?</h2>
+        <p>Apakah kamu yakin ingin menghapus <strong>{{ experience.title }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
+        
+        <form method="POST" action="{% url 'main:delete_experience' experience.id %}">
+            {% csrf_token %}
+            <div class="skill-delete-modal__actions">
+                <button type="button" class="button button-secondary" onclick="document.getElementById('delete-modal-{{ experience.id }}').close()">Batal</button>
+                <button type="submit" class="button button-danger">Hapus</button>
+            </div>
+        </form>
+    </div>
+</dialog>

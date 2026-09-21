@@ -144,7 +144,7 @@ def create_education(request):
         return redirect("main:show_education")
     
     context = {
-        "name": "Burhan",
+        "name": "Salma Maharani",
         "form": form,
         "title": "Add New Education",
     }

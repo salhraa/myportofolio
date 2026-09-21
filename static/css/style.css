@@ -470,3 +470,48 @@ footer p {
     line-height: 1.4;
 }
 
+.experience-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.experience-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+.btn-pixel {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.6rem;
+    color: var(--border-dark);
+    background: var(--bg-pink-soft);
+    padding: 8px 12px;
+    border: 2px solid var(--border-dark);
+    border-radius: 6px;
+    box-shadow: 2px 2px 0px var(--border-dark);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-pixel:hover {
+    background: var(--pink-accent);
+    color: var(--text-white);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px var(--border-dark);
+}
+
+.btn-pixel.btn-danger {
+    background: #ff4d6d;
+    color: #ffffff;
+}
+
+.btn-pixel.btn-danger:hover {
+    background: #b42318;
+}

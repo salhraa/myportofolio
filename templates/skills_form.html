@@ -1,29 +1,36 @@
 {% extends "base.html" %}
+
 {% block meta %}
-    <title>Add Skill - {{ name }}</title>
+    <title>{{ title|default:"Add Skill" }} - {{ name }}</title>
 {% endblock meta %}
+
 {% block content %}
     <main>
-        <section class="experience-section">
-            <div class="container">
-                <h1 style="text-align: center; margin-bottom: 2rem;">Add New Skill</h1>
+        <section class="skill-section">
+            <div class="container" style="max-width: 600px; margin: 0 auto; padding: 2rem 1rem;">
+                <h1 style="text-align: center; margin-bottom: 2rem; color: #fff;">{{ title|default:"Add New Skill" }}</h1>
                 
-                <div class="form-card">
-                    <form method="post" action="{% url 'main:create_skill' %}">
+                <div class="form-card" style="background: rgba(255, 255, 255, 0.05); border: 2px solid #333; border-radius: 12px; padding: 2rem; backdrop-filter: blur(5px);">
+                    <form method="post">
                         {% csrf_token %}
+                        
                         {% for field in form %}
-                            <div class="form-group">
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            <div class="form-group" style="margin-bottom: 1.25rem; display: flex; flex-direction: column;">
+                                <label for="{{ field.id_for_label }}" style="color: #ffffff; font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                                    {{ field.label }}
+                                </label>
+                                
                                 {{ field }}
+                                
                                 {% for error in field.errors %}
-                                    <p class="form-error" style="color: #d90429; font-size: 0.8rem; margin-top: 4px;">{{ error }}</p>
+                                    <p class="form-error" style="color: #ff4d4d; font-size: 0.85rem; margin-top: 4px;">{{ error }}</p>
                                 {% endfor %}
                             </div>
                         {% endfor %}
                         
-                        <div class="form-actions">
+                        <div class="form-actions" style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                             <button type="submit" class="btn-pixel">Tambah Skill</button>
-                            <a href="{% url 'main:show_skills' %}" class="btn-pixel btn-pixel-secondary">Batal</a>
+                            <a href="{% url 'main:show_main' %}" class="btn-pixel btn-pixel-secondary" style="color: white;">Batal</a>
                         </div>
                     </form>
                 </div>
