@@ -29,10 +29,13 @@ def show_experience(request):
 
 def create_experience(request):
     form = ExperienceForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        messages.success(request, 'Pengalaman baru berhasil ditambahkan!')
-        return redirect('main:show_experience')
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Pengalaman baru berhasil ditambahkan!')
+            return redirect('main:show_experience')
+        else:
+            print("Form Errors:", form.errors)
     
     context = {
         'name': 'Salma Maharani',

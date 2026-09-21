@@ -92,7 +92,18 @@ class EducationForm(ModelForm):
 class ExperienceForm(forms.ModelForm):
     class Meta:
         model = Experience
-        fields = ['title', 'category', 'description', 'thumbnail', 'status', 'ended_at']
+        fields = ['title', 'category', 'description', 'started_at', 'ended_at']
         widgets = {
-            'ended_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'title': forms.TextInput(attrs={'style': 'width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #444; background: #fff; color: #000;'}),
+            'category': forms.Select(attrs={'style': 'width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #444; background: #fff; color: #000;'}),
+            'description': forms.Textarea(attrs={'rows': 4, 'style': 'width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #444; background: #fff; color: #000;'}),
+            'started_at': forms.DateInput(attrs={'type': 'date', 'style': 'width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #444; background: #fff; color: #000;'}),
+            'ended_at': forms.DateInput(attrs={'type': 'date', 'style': 'width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #444; background: #fff; color: #000;'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'started_at' in self.fields:
+            self.fields['started_at'].required = True
+        if 'ended_at' in self.fields:
+            self.fields['ended_at'].required = False
