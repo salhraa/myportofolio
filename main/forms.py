@@ -1,5 +1,6 @@
-from django.forms import ModelForm, Select, TextInput, Textarea
+from django.forms import ModelForm, Select, TextInput, Textarea, NumberInput
 from main.models import Skill
+from main.models import Education
 
 
 class SkillForm(ModelForm):
@@ -32,5 +33,58 @@ class SkillForm(ModelForm):
         ),
     }
 
-from main.models import Artwork, Skill
-
+class EducationForm(ModelForm):
+    class Meta:
+        model = Education
+        fields = [
+            "institution",
+            "degree",
+            "field_of_study",
+            "start_year",
+            "end_year",
+            "description",
+        ]
+        labels = {
+            "institution": "Nama Instansi / Universitas",
+            "degree": "Gelar / Jenjang",
+            "field_of_study": "Bidang Studi",
+            "start_year": "Tahun Masuk",
+            "end_year": "Tahun Lulus (Kosongkan jika masih berjalan)",
+            "description": "Deskripsi / Kegiatan",
+        }
+        widgets = {
+            "institution": TextInput(
+                attrs={
+                    "placeholder": "Contoh: Universitas Indonesia",
+                    "maxlength": 255,
+                }
+            ),
+            "degree": TextInput(
+                attrs={
+                    "placeholder": "Contoh: Sarjana (S1)",
+                    "maxlength": 100,
+                }
+            ),
+            "field_of_study": TextInput(
+                attrs={
+                    "placeholder": "Contoh: Sistem Informasi",
+                    "maxlength": 100,
+                }
+            ),
+            "start_year": NumberInput(
+                attrs={
+                    "placeholder": "2025",
+                }
+            ),
+            "end_year": NumberInput(
+                attrs={
+                    "placeholder": "2029",
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "placeholder": "Ceritakan fokus studi atau pencapaianmu...",
+                    "rows": 3,
+                }
+            ),
+        }
