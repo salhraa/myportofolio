@@ -1,37 +1,117 @@
 {% extends 'base.html' %}
 {% block content %}
     <main>
+        <div class="bubble-container" id="bubbleContainer"></div>
+
         <section class="hero" id="profile">
             <div class="container hero-grid">
                 <div class="hero-identity">
-                    <p class="hero-kicker">Computer Science &middot; Universitas Indonesia</p>
+                    <p class="hero-kicker">Information Systems &middot; Universitas Indonesia</p>
                     <h1>{{ name }}</h1>
                 </div>
-                <div class="hero-photo">
-                    <div class="photo-block"></div>
-                    <img class="avatar" src="/static/img/myprofil.jpeg" alt="Photo of {{ name }}">
-                </div>
-                <div class="hero-details">
-                    <p class="bio">{{ bio }}</p>
-                    <dl class="meta-list">
-                        <div class="meta-row">
-                            <dt>NPM</dt>
-                            <dd>{{ npm }}</dd>
-                        </div>
-                        <div class="meta-row">
-                            <dt>Program Studi</dt>
-                            <dd>{{ study_program }}</dd>
-                        </div>
-                    </dl>
-                    <div class="social-links">
-                        <a href="https://github.com/salhraa" class="social-link">GitHub</a>
-                        <a href="https://www.linkedin.com/in/salhraa/" class="social-link">LinkedIn</a>
-                        <a href="mailto:salhrnii@gmail.com" class="social-link">Email</a>
+
+                <div class="hero-photo-container">
+                    <div id="photoRevealBox" class="photo-reveal-box" onclick="revealPhoto()">
+                        <span class="pixel-icon">🎁</span>
+                        <span class="reveal-text">CLICK</span>
                     </div>
+                    <div id="hiddenPhotoWrap" class="hidden-photo-wrap">
+                        <div class="photo-block">main character</div>
+                        <img class="avatar" src="/static/img/myprofil.jpeg" alt="Photo of {{ name }}">
+                        <button class="btn-hide-photo" onclick="hidePhoto()">[ CLOSE ]</button>
+                    </div>
+                </div>
+
+                <div class="meta-card">
+                    <dt>NPM</dt>
+                    <dd>{{ npm }}</dd>
+                </div>
+                <div class="meta-card">
+                    <dt>Program Studi</dt>
+                    <dd>{{ study_program }}</dd>
+                </div>
+
+                <div class="hero-bio-card">
+                    <div class="rpg-dialogue-box">
+                        <div class="dialogue-header">★ [MY BIO] ★</div>
+                        <p class="bio" id="rpgDialogueText" data-text="{{ bio }}"></p>
+                        <span class="dialogue-cursor">▼</span>
+                    </div>
+                </div>
+
+                <div class="hero-socials-card">
+                    <a href="https://github.com/salhraa" class="social-link">GitHub</a>
+                    <a href="https://www.linkedin.com/in/salhraa/" class="social-link">LinkedIn</a>
+                    <a href="mailto:salhrnii@gmail.com" class="social-link">Email</a>
                 </div>
             </div>
         </section>
     </main>
+
+  
+    <script>
+        function revealPhoto() {
+            document.getElementById('photoRevealBox').style.display = 'none';
+            const photoWrap = document.getElementById('hiddenPhotoWrap');
+            photoWrap.style.display = 'block';
+        }
+
+        function hidePhoto() {
+            document.getElementById('hiddenPhotoWrap').style.display = 'none';
+            document.getElementById('photoRevealBox').style.display = 'flex';
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const bubbleContainer = document.getElementById("bubbleContainer");
+            const bubbleCount = 15;
+
+            for (let i = 0; i < bubbleCount; i++) {
+                let bubble = document.createElement("div");
+                bubble.classList.add("pixel-bubble");
+                
+                let size = Math.floor(Math.random() * 24) + 12;
+                bubble.style.width = size + "px";
+                bubble.style.height = size + "px";
+                bubble.style.left = Math.random() * 100 + "%";
+                
+                let duration = Math.random() * 6 + 4;
+                let delay = Math.random() * 5;
+                bubble.style.animationDuration = duration + "s";
+                bubble.style.animationDelay = delay + "s";
+                
+                bubbleContainer.appendChild(bubble);
+            }
+
+            const dialogueEl = document.getElementById("rpgDialogueText");
+            if (!dialogueEl) return;
+            
+            const fullText = dialogueEl.getAttribute("data-text");
+            let i = 0;
+            let isDeleting = false;
+            
+            function loopTypewriter() {
+                if (!isDeleting) {
+                    dialogueEl.innerHTML = fullText.substring(0, i + 1);
+                    i++;
+                    if (i === fullText.length) {
+                        setTimeout(() => { isDeleting = true; }, 2500);
+                        setTimeout(loopTypewriter, 2500);
+                        return;
+                    }
+                    setTimeout(loopTypewriter, 35);
+                } else {
+                    dialogueEl.innerHTML = fullText.substring(0, i - 1);
+                    i--;
+                    if (i === 0) {
+                        isDeleting = false;
+                        setTimeout(loopTypewriter, 800);
+                        return;
+                    }
+                    setTimeout(loopTypewriter, 20);
+                }
+            }
+            
+            setTimeout(loopTypewriter, 500);
+        });
+    </script>
 {% endblock content %}
-</body>
-</html>

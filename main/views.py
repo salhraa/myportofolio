@@ -13,8 +13,13 @@ def show_main(request):
         "npm": "2506586532",
         "study_program": "S1 Sistem Informasi",
         "bio": (
-            "Mahasiswa Ilmu Komputer Universitas Indonesia yang tertarik "
-            "pada pengembangan perangkat lunak dan kesenian."
+            "Just a professional daydreamer out here trying every side quest life throws at me. "
+            "My entire personality is basically romanticizing the mundane. "
+            "Having my mood entirely dictated by whether a stray cat lets me pet it (spoiler: it usually does). "
+            "Big on trying new hobbies even if I abandon them two weeks later, but hey, we love a versatile queen. "
+            "Listening to music like it's a full-time job, and trying not to let my tech stack or my sleep schedule break down completely. "
+            "Pls send cat pics immediately.🐾🐾🐾🐾🐾🐾🐾🐾🐾🐾🐾🐾🐾"
+
         ),
     }
     return render(request, "index.html", context)
@@ -117,7 +122,18 @@ def delete_skill(request, skill_id):
         skill.delete()
         messages.success(request, "Skill berhasil dihapus!")
         return redirect("main:show_skills")
+   
 
+def update_skill(request, id):
+    skill = get_object_or_404(Skill, pk=id)
+    form = SkillForm(request.POST or None, instance=skill)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return redirect('main:show_skills')
+
+    context = {'form': form}
+    return render(request, "skills_form.html", context)
 
 def show_education(request):
     json_response = get_education_json(request)
@@ -181,5 +197,7 @@ def get_education_json(request):
     
     education_json = serializers.serialize("json", education_list)
     return HttpResponse(education_json, content_type="application/json")
+
+
 
 

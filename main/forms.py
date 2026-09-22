@@ -7,16 +7,16 @@ class SkillForm(ModelForm):
 
   class Meta:
     model = Skill
-    fields = ["name", "level", "description"]
+    fields = ["name", "level", "description", "skill_image_url"]
     labels = {
-        "name": "Nama Skill",
-        "level": "Tingkat Keahlian",
-        "description": "Deskripsi Skill",
+        "name": "Skill Name",
+        "level": "Proficiency Level",
+        "description": "Skill Description",
     }
     widgets = {
         "name": TextInput(
             attrs={
-                "placeholder": "Contoh: Python, Digital Logic, AVR Assembly",
+                "placeholder": "Input skill name",
                 "maxlength": 100,
             }
         ),
@@ -27,10 +27,14 @@ class SkillForm(ModelForm):
         ),
         "description": Textarea(
             attrs={
-                "placeholder": "Jelaskan pengalaman atau pemahamanmu tentang skill ini...",
+                "placeholder": "explain your experience or understanding about this skill...",
                 "rows": 3,
             }
         ),
+        'skill_image_url': forms.URLInput(attrs={
+                'class': 'skill-search__input', 
+                'placeholder': 'Image link'
+            }),
     }
 
 class EducationForm(ModelForm):
@@ -45,29 +49,29 @@ class EducationForm(ModelForm):
             "description",
         ]
         labels = {
-            "institution": "Nama Instansi / Universitas",
-            "degree": "Gelar / Jenjang",
-            "field_of_study": "Bidang Studi",
-            "start_year": "Tahun Masuk",
-            "end_year": "Tahun Lulus (Kosongkan jika masih berjalan)",
-            "description": "Deskripsi / Kegiatan",
+            "institution": "Institution Nmae",
+            "degree": "Degree / Academic Level",
+            "field_of_study": "Field of Study",
+            "start_year": "Enrollment Year",
+            "end_year": "Graduation Year",
+            "description": "Description",
         }
         widgets = {
             "institution": TextInput(
                 attrs={
-                    "placeholder": "Contoh: Universitas Indonesia",
+                    "placeholder": "example: Universitas Indonesia",
                     "maxlength": 255,
                 }
             ),
             "degree": TextInput(
                 attrs={
-                    "placeholder": "Contoh: Sarjana (S1)",
+                    "placeholder": "example: Bachelor's Degree",
                     "maxlength": 100,
                 }
             ),
             "field_of_study": TextInput(
                 attrs={
-                    "placeholder": "Contoh: Sistem Informasi",
+                    "placeholder": "example: Information System",
                     "maxlength": 100,
                 }
             ),
@@ -83,7 +87,7 @@ class EducationForm(ModelForm):
             ),
             "description": Textarea(
                 attrs={
-                    "placeholder": "Ceritakan fokus studi atau pencapaianmu...",
+                    "placeholder": "tell about your study focus...",
                     "rows": 3,
                 }
             ),

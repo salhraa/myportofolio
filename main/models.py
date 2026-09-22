@@ -36,19 +36,9 @@ class Skill(models.Model):
     name = models.CharField(max_length=100)
     level = models.CharField(max_length=20, choices=SKILL_LEVELS, default='intermediate')
     description = models.TextField(blank=True, default="")
-
+    skill_image_url = models.URLField(max_length=255, blank=True, null=True)
     def __str__(self):
         return self.name
-
-class Artwork(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable = False)
-    skill = models.ForeignKey(Skill, on_delete=models.CASCADE, related_name='artworks')
-    title = models.TextField(blank=True, default="")
-    description = models.CharField(max_length=150)
-    image_url = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.title
 
 class Education(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

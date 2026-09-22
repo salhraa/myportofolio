@@ -1,29 +1,33 @@
 {% extends "base.html" %}
+
 {% block meta %}
-    <title>MySkills</title>
+    <title>MySkills - {{ name }}</title>
 {% endblock meta %}
+
 {% block content %}
     <main>
-        <section class="experience-section" id="experience">
+        <section class="experience-section" id="skills">
             <div class="container">
-                <p class="section-kicker">Karya yang saya bangun</p>
-                <div class="skill-header">
+                <p class="section-kicker">My Skills</p>
+                
+                <div class="skill-header project-header">
                     <h1>Skills</h1>
-                    <a href="{% url 'main:create_skill' %}" class="btn-pixel">
-                        <span aria-hidden="true">+</span> Tambah Skill
+                    <a href="{% url 'main:create_skill' %}" class="button project-add-button btn-pixel">
+                        <span aria-hidden="true">+</span> Add Skill
                     </a>
                 </div>
 
-                <form method="get" action="{% url 'main:show_skills' %}" class="skill-search">
+                <form method="get" action="{% url 'main:show_skills' %}" class="skill-search project-search">
                     <input type="search"
-                        name="title"
-                        value="{{ title_query }}"
-                        placeholder="Cari berdasarkan nama skill..."
-                        class="skill-search__input"
-                        aria-label="Cari berdasarkan nama skill">
-                    <button type="submit" class="btn-pixel">Cari</button>
+                           name="title"
+                           value="{{ title_query }}"
+                           placeholder="Search skill name..."
+                           class="skill-search__input project-search__input"
+                           aria-label="Search skill name">
+                    <button type="submit" class="button btn-pixel">Search</button>
                 </form>
-                <div class="experience-grid skill-grid">
+
+                <div class="experience-grid skill-grid project-grid">
                     {% for skill in skill_list %}
                         <article class="experience-card">
                             {% if skill.skill_image_url %}
@@ -41,12 +45,16 @@
 
                             <h2>{{ skill.name }}</h2>
                             <span class="experience-category">{{ skill.tech_stack }}</span>
-                            <p class="experience-description">{{ skill.description }}</p>
                             
-                            <div class="skill-card-actions">
-                                <div class="skill-actions">
+                            {% if skill.description %}
+                                <p class="experience-description">{{ skill.description }}</p>
+                            {% endif %}
+                            
+                            <div class="skill-card-actions project-card-actions">
+                                <div class="skill-actions project-actions">
+                                    <a href="{% url 'main:update_skill' skill.id %}" class="button">Edit</a>
                                     {% if skill.skill_url %}
-                                        <a href="{{ skill.skill_url }}" class="button">Lihat Skill</a>
+                                        <a href="{{ skill.skill_url }}" class="button" target="_blank" rel="noopener noreferrer">View Skill</a>
                                     {% endif %}
                                     {% include "components/skill_delete_modal.html" with skill=skill %}
                                 </div>
@@ -54,9 +62,9 @@
                         </article>
                     {% empty %}
                         {% if title_query %}
-                            <p class="empty-state">Tidak ada skill dengan nama tersebut.</p>
+                            <p class="empty-state">No skill named with "{{ title_query }}".</p>
                         {% else %}
-                            <p class="empty-state">Belum ada skill yang ditambahkan.</p>
+                            <p class="empty-state">No skill added yet</p>
                         {% endif %}
                     {% endfor %}
                 </div>
