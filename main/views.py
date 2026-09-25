@@ -9,7 +9,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.shortcuts import redirect, render
 import datetime
-from django.contrib.auth.decorators import login_required 
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied        
 
 def show_main(request):
@@ -262,8 +262,8 @@ def logout_user(request):
 
 
 @login_required(login_url="/login/")
-def toggle_star(request, project_id):
-    skill = get_object_or_404(Skill, pk=project_id)
+def toggle_star(request, skill_id):
+    skill = get_object_or_404(Skill, pk=skill_id)
 
     if request.method == "POST":
         if request.user in skill.starred_by.all():
@@ -271,4 +271,8 @@ def toggle_star(request, project_id):
         else:
             skill.starred_by.add(request.user)
 
-    return redirect("main:show_skill")
+    return redirect("main:show_skills")
+
+def is_editor(user):
+  return user.groups.filter(name='Editor').exists() or user.is_superuser
+

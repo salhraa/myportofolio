@@ -18,6 +18,9 @@ class Experience(models.Model):
     category = models.CharField(max_length=20, choices=EXPERIENCE_CHOICES, default='full-time')
     started_at = models.DateTimeField(blank=True, null=True)
     ended_at = models.DateTimeField(blank=True, null=True)
+    starred_by = models.ManyToManyField(
+            User, related_name="starred_experience", blank=True
+        )
     
     def __str__(self):
         return self.title
@@ -40,7 +43,7 @@ class Skill(models.Model):
     description = models.TextField(blank=True, default="")
     skill_image_url = models.URLField(max_length=255, blank=True, null=True)
     starred_by = models.ManyToManyField(
-        User, related_name="starred_projects", blank=True
+        User, related_name="starred_skills", blank=True
     )
     def __str__(self):
         return self.name

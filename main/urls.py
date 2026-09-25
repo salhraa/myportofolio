@@ -1,5 +1,5 @@
 from django.urls import path
-
+from main import views
 from main.views import create_experience, delete_experience, get_skills_json, login_user, logout_user, register, show_main, show_experience, show_skills, create_skill, delete_skill, show_education, create_education, toggle_star, update_education, delete_education, get_education_json, update_experience, update_skill
 create_experience, update_experience, delete_experience, update_skill, register, login_user, logout_user,
 
@@ -26,6 +26,6 @@ urlpatterns = [
     path("register/", register, name="register"),
     path("login/", login_user, name="login"),
     path("logout/", logout_user, name="logout"),
-    path("projects/<uuid:project_id>/star/", toggle_star, name="toggle_star",
-),
+    path("skills/<uuid:skill_id>/star/", toggle_star, name="toggle_star"),
+    path('json/', views.get_skills_json, name='get_skills_json'),
 ]
