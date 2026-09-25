@@ -1,4 +1,5 @@
 import uuid
+from django.contrib.auth.models import User 
 from django.db import models
 
 class Experience(models.Model):
@@ -17,6 +18,7 @@ class Experience(models.Model):
     category = models.CharField(max_length=20, choices=EXPERIENCE_CHOICES, default='full-time')
     started_at = models.DateTimeField(blank=True, null=True)
     ended_at = models.DateTimeField(blank=True, null=True)
+    
     def __str__(self):
         return self.title
     
@@ -37,6 +39,9 @@ class Skill(models.Model):
     level = models.CharField(max_length=20, choices=SKILL_LEVELS, default='intermediate')
     description = models.TextField(blank=True, default="")
     skill_image_url = models.URLField(max_length=255, blank=True, null=True)
+    starred_by = models.ManyToManyField(
+        User, related_name="starred_projects", blank=True
+    )
     def __str__(self):
         return self.name
 
