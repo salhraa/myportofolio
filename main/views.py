@@ -2,7 +2,7 @@ from django.shortcuts import render
 from main.models import Experience, Skill, Education
 from django.contrib import messages
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from main.forms import SkillForm, EducationForm, ExperienceForm
 from django.contrib.auth import login, logout
@@ -86,21 +86,9 @@ def delete_experience(request, experience_id):
     return redirect('main:show_experience')
 
 def show_skills(request):
-    json_response = get_skills_json(request)
-    skills = serializers.deserialize(
-       "json",
-       json_response.content.decode("utf-8"),
-    )
-    skills = [skill.object for skill in skills]
     title_query = request.GET.get("title", "").strip()
-    if title_query:
-        skills= [
-            skill for skill in skills
-            if title_query.lower() in skill.name.lower()
-        ] # type: ignore
     context = {
         "name": "Salma Maharani",
-        "skill_list" : skills,
         "title_query": title_query,
     }
     return render(request, "skill.html", context)
@@ -122,13 +110,33 @@ def create_skill(request):
 
 def get_skills_json(request):
     title_query = request.GET.get("title", "").strip()
-    skills = Skill.objects.all()
+    skills = Skill.objects.prefetch_related('starred_by').all()
 
     if title_query:
-        skills = skills.filter(name__icontains=title_query)
+        skills = skills.filter(title__icontains=title_query)
 
-    skills_json = serializers.serialize("json", skills, use_natural_foreign_keys=True)
-    return HttpResponse(skills_json, content_type="application/json")
+    data = []
+    for skill in skills:
+        starred_users = skill.starred_by.all()
+        is_starred = request.user in starred_users if request.users.is_authenticated else False
+        starred_by_names = ", ".join([u.username for u in starred_users])
+
+        data.append({
+            "pk": str(skill.id),
+            "fields": {
+                "title": skill.title,
+                "description": skill.description,
+                "tech_stack": skill.tech_stack,
+                "skill_url": skill.skill_url,
+                "skill_image_url": skill.skill_image_url,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+
+            }
+        })
+
+    return JsonResponse(data, safe=False)
 
 def delete_skill(request, skill_id):
    skill = get_object_or_404(Skill, pk=skill_id)
