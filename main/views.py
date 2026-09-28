@@ -59,9 +59,9 @@ def create_experience(request):
     return render(request, 'experience_form.html', context)
 
 def update_experience(request, experience_id):
-    experience = get_object_or_404(Experience, pk=experience_id)
     if not request.user.is_superuser:
-            raise PermissionDenied
+                raise PermissionDenied
+    experience = get_object_or_404(Experience, pk=experience_id)
     form = ExperienceForm(request.POST or None, instance=experience)
     if request.method == 'POST' and form.is_valid():
         form.save()
@@ -94,7 +94,7 @@ def show_skills(request):
     skills = [skill.object for skill in skills]
     title_query = request.GET.get("title", "").strip()
     if title_query:
-        skills: [
+        skills= [
             skill for skill in skills
             if title_query.lower() in skill.name.lower()
         ] # type: ignore
@@ -146,9 +146,9 @@ def update_skill(request, id):
             raise PermissionDenied
     form = SkillForm(request.POST or None, instance=skill)
 
-    if form.is_valid() and request.method == "POST":
+    if request.method == "POST" and form.is_valid():
         form.save()
-        return redirect('main:show_skills')
+        return redirect("main:show_skills")
 
     context = {'form': form}
     return render(request, "skills_form.html", context)
