@@ -188,12 +188,13 @@ def show_education(request):
 def create_education(request):
     if not request.user.is_superuser:
         raise PermissionDenied
+        
     form = EducationForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
-        form.save()
         education = form.save(commit=False)
         education.user = request.user
         education.save()
+        
         messages.success(request, "Pendidikan baru berhasil ditambahkan!")
         return redirect("main:show_education")
     
