@@ -9,42 +9,48 @@
         <section class="experience-section" id="education">
             <div class="container">
                 <p class="section-kicker">My Education</p>
-                <div class="project-header">
-                    <h1>Education</h1>
+                
+                <!-- Header: Judul dan Tombol Sejajar -->
+                <div class="project-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                    <h1 style="margin: 0; font-size: 2rem;">Education</h1>
                     {% if user.is_superuser %}
-                        <a href="{% url 'main:create_education' %}" class="button project-add-button">
+                        <a href="{% url 'main:create_education' %}" class="button project-add-button" style="text-decoration: none;">
                             <span aria-hidden="true">+</span>
                             Add Education
                         </a>
                     {% endif %}
                 </div>
 
-                <form method="get" action="{% url 'main:show_education' %}" class="project-search">
+                <!-- Form Search -->
+                <form method="get" action="{% url 'main:show_education' %}" class="project-search" style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 2rem; flex-wrap: wrap;">
                     <input type="search"
                            name="q"
                            value="{{ query }}"
                            placeholder="Search by institution name..."
                            class="project-search__input"
+                           style="flex: 1; min-width: 240px; padding: 10px 15px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.25); backdrop-filter: blur(10px); color: #111;"
                            aria-label="Search by institution name">
                     <button type="submit" class="button">Search</button>
                 </form>
 
-                <div class="experience-grid project-grid">
+                <!-- Grid Container -->
+                <div class="experience-grid project-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
                     {% for education in education_list %}
-                        <article class="experience-card">
-                            <h2>{{ education.degree }} - {{ education.field_of_study }}</h2>
-                            <span class="experience-category">{{ education.institution }}</span>
-                            <p class="experience-description">
+                        <article class="experience-card" style="background: rgba(255, 255, 255, 0.25); border: 2px solid rgba(255, 255, 255, 0.4); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 0.75rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);">
+                            
+                            <h2 style="margin: 0; font-size: 1.25rem; color: #111111; font-weight: bold;">{{ education.degree }} - {{ education.field_of_study }}</h2>
+                            <span class="experience-category" style="font-size: 0.95rem; color: #222222; font-weight: bold;">{{ education.institution }}</span>
+                            <p class="experience-description" style="margin: 0; color: #2b2b2b; font-size: 1rem; line-height: 1.5;">
                                 <strong>Year:</strong> {{ education.start_year }} - 
                                 {% if education.end_year %}{{ education.end_year }}{% else %}Now{% endif %}
                             </p>
                             {% if education.description %}
-                                <p class="experience-description">{{ education.description }}</p>
+                                <p class="experience-description" style="margin: 0; color: #2b2b2b; font-size: 1rem; line-height: 1.5;">{{ education.description }}</p>
                             {% endif %}
                             
-                            <div class="project-card-actions">
-                                <div class="project-actions">
-                                    <a href="{% url 'main:update_education' education.id %}" class="button">Edit</a>
+                            <div class="project-card-actions" style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(0, 0, 0, 0.15);">
+                                <div class="project-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                                    <a href="{% url 'main:update_education' education.id %}" class="button" style="font-size: 0.5rem; padding: 6px 10px; text-decoration: none;">Edit</a>
                                     {% if user.is_superuser %}
                                         {% include "components/education_delete_modal.html" with education=education %}
                                     {% endif %}
@@ -53,9 +59,9 @@
                         </article>
                     {% empty %}
                         {% if query %}
-                            <p class="empty-state">No educational institution named with "{{ query }}".</p>
+                            <p class="empty-state" style="grid-column: 1 / -1; text-align: center; color: #111;">No educational institution named with "{{ query }}".</p>
                         {% else %}
-                            <p class="empty-state">No educational history added yet</p>
+                            <p class="empty-state" style="grid-column: 1 / -1; text-align: center; color: #111;">No educational history added yet</p>
                         {% endif %}
                     {% endfor %}
                 </div>

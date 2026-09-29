@@ -64,7 +64,8 @@ body::before {
 }
 
 .container,
-.experience-section .container {
+.experience-section .container,
+.skill-section .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 32px;
@@ -201,6 +202,7 @@ main {
 .hero-bio-card,
 .hero-socials-card > a,
 .experience-card,
+.skill-card,
 .form-card,
 .empty-state {
     background: var(--glass-outer-bg);
@@ -220,7 +222,8 @@ main {
 .meta-card:hover,
 .hero-bio-card:hover,
 .hero-socials-card > a:hover,
-.experience-card:hover {
+.experience-card:hover,
+.skill-card:hover {
     transform: translateY(-2px);
     border-color: var(--game-pink);
 }
@@ -231,6 +234,7 @@ main {
 .hero-bio-card::before,
 .hero-socials-card > a::before,
 .experience-card::before,
+.skill-card::before,
 .form-card::before {
     content: "";
     position: absolute;
@@ -252,6 +256,7 @@ main {
 .hero-bio-card > *,
 .hero-socials-card > a > *,
 .experience-card > *,
+.skill-card > *,
 .form-card form {
     position: relative;
     z-index: 1;
@@ -266,6 +271,7 @@ main {
 
 .hero-kicker,
 .experience-section .section-kicker,
+.skill-section .section-kicker,
 .section-kicker {
     font-family: 'Press Start 2P', monospace !important;
     font-size: 0.5rem !important;
@@ -541,7 +547,7 @@ main {
     padding: 20px 0;
 }
 
-.project-header {
+.skill-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -553,14 +559,13 @@ main {
 .experience-section h1,
 .skill-section h1,
 .education-section h1,
-.project-header h1 {
+.skill-header h1 {
     font-family: 'Press Start 2P', monospace !important;
     font-size: 1.3rem;
     color: var(--text-main) !important;
     text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.9), 0 0 10px rgba(244, 114, 182, 0.3) !important;
 }
 
-.project-search,
 .skill-search {
     display: flex;
     gap: 12px;
@@ -568,7 +573,6 @@ main {
     max-width: 600px;
 }
 
-.project-search__input,
 .skill-search__input {
     flex: 1;
     font-family: 'VT323', monospace;
@@ -585,20 +589,18 @@ main {
     transition: all 0.2s ease;
 }
 
-.project-search__input::placeholder,
 .skill-search__input::placeholder {
     color: var(--text-muted);
     opacity: 0.7;
 }
 
-.project-search__input:focus,
 .skill-search__input:focus {
     border-color: var(--game-pink);
     box-shadow: 0 0 15px var(--game-pink), inset 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
 .experience-grid,
-.project-grid {
+.skill-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
@@ -606,26 +608,28 @@ main {
 
 @media (min-width: 768px) {
     .experience-grid,
-    .project-grid {
+    .skill-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (min-width: 1200px) {
     .experience-grid,
-    .project-grid {
+    .skill-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
-.experience-card {
+.experience-card,
+.skill-card {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 24px;
 }
 
-.experience-card h2 {
+.experience-card h2,
+.skill-card h2 {
     font-family: 'Press Start 2P', monospace;
     font-size: 0.7rem;
     color: var(--text-main);
@@ -633,7 +637,8 @@ main {
     line-height: 1.4;
 }
 
-.experience-category {
+.experience-category,
+.skill-category {
     font-family: 'Press Start 2P', monospace;
     font-size: 0.45rem;
     color: var(--game-purple) !important;
@@ -643,7 +648,8 @@ main {
     text-shadow: 0.5px 0.5px 0px rgba(255, 255, 255, 0.8);
 }
 
-.experience-description {
+.experience-description,
+.skill-description {
     font-size: 1.25rem;
     color: #969fac !important;
     margin-bottom: 14px;
@@ -651,14 +657,16 @@ main {
     font-weight: 500;
 }
 
-.experience-card-header {
+.experience-card-header,
+.skill-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
 }
 
-.experience-status {
+.experience-status,
+.skill-level {
     font-family: 'Press Start 2P', monospace;
     font-size: 0.35rem;
     padding: 4px 8px;
@@ -678,9 +686,9 @@ main {
 }
 
 .button, 
-.project-add-button, 
+.skill-add-button, 
 .btn-pixel,
-.project-search button,
+.skill-search button,
 .form-actions .btn-pixel {
     font-family: 'Press Start 2P', monospace;
     font-size: 0.5rem;
@@ -703,9 +711,9 @@ main {
 }
 
 .button:hover, 
-.project-add-button:hover, 
+.skill-add-button:hover, 
 .btn-pixel:hover,
-.project-search button:hover,
+.skill-search button:hover,
 .form-actions .btn-pixel:hover {
     background: var(--game-pink);
     color: #ffffff;
@@ -716,12 +724,12 @@ main {
 
 .button:active,
 .button:focus,
-.project-add-button:active,
-.project-add-button:focus,
+.skill-add-button:active,
+.skill-add-button:focus,
 .btn-pixel:active,
 .btn-pixel:focus,
-.project-search button:active,
-.project-search button:focus,
+.skill-search button:active,
+.skill-search button:focus,
 .form-actions .btn-pixel:active,
 .form-actions .btn-pixel:focus {
     background: rgba(255, 255, 255, 0.7) !important;
@@ -732,13 +740,13 @@ main {
     transform: scale(0.97);
 }
 
-.project-card-actions {
+.skill-card-actions {
     margin-top: 12px;
     padding-top: 12px;
     border-top: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-.project-actions {
+.skill-actions {
     display: flex;
     gap: 8px;
     align-items: center;
@@ -886,20 +894,21 @@ main {
     font-size: 0.8rem;
 }
 
-/* toast */
 .toast-component {
     position: fixed;
     inset: auto 2rem 2rem auto;
     margin: 0;
     padding: 1rem 1.5rem;
-    border-radius: var(--radius);
+    border-radius: 12px;
     box-shadow: 0 10px 25px rgba(28, 25, 23, 0.15);
     display: none;
     align-items: center;
     gap: 1rem;
     transition: all 0.3s ease;
-    background-color: var(--paper);
-    border: 1px solid var(--line);
+    background-color: var(--glass-outer-bg);
+    border: var(--glass-outer-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: inherit;
 }
 
@@ -922,7 +931,7 @@ main {
     font-size: 1rem;
     font-weight: 700;
     margin-bottom: 0.15rem;
-    font-family: "Space Grotesk", -apple-system, sans-serif;
+    font-family: 'Press Start 2P', monospace;
 }
 
 .toast-message {
@@ -930,7 +939,119 @@ main {
     color: var(--text-muted);
 }
 
-/* Modifikasi border kiri berdasarkan tipe notifikasi */
-.toast-success { border-left: 4px solid #22c55e; }
-.toast-error { border-left: 4px solid #b42318; }
-.toast-normal { border-left: 4px solid var(--accent); }
+.toast-success { border-left: 4px solid #34d399; }
+.toast-error { border-left: 4px solid #e11d48; }
+.toast-normal { border-left: 4px solid var(--game-pink); }
+
+.hide {
+    display: none !important;
+}
+
+.skill-form-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 1rem;
+    border: 0;
+    background: transparent;
+    z-index: 10;
+    align-items: center;
+    justify-content: center;
+}
+
+.skill-form-modal:popover-open {
+    display: flex;
+}
+
+.skill-form-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    background: rgba(14, 44, 58, 0.45);
+    cursor: default;
+}
+
+.skill-form-modal__content {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 640px);
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    padding: 2rem;
+    background: var(--glass-outer-bg);
+    border: var(--glass-outer-border);
+    border-radius: 20px;
+    box-shadow: var(--glass-outer-shadow);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.skill-form-modal__content h2 {
+    margin: 0 2.5rem 1.25rem 0;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.skill-form-modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border: 0;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.skill-form-modal__close:hover {
+    background: var(--game-pink);
+    color: #fff;
+    border-color: var(--game-pink);
+}
+
+.skill-form-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 600px) {
+    .skill-form-modal {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .skill-form-modal__content {
+        width: 100%;
+        max-height: 90vh;
+        padding: 1.25rem;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .skill-form-modal__actions {
+        flex-direction: column-reverse;
+    }
+
+    .skill-form-modal__actions .button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+.hide {
+    display: none !important;
+}

@@ -10,10 +10,12 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.shortcuts import redirect, render
 import datetime
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.exceptions import PermissionDenied        
+from django.core.exceptions import PermissionDenied     
+from django.views.decorators.http import require_POST
+
 
 def show_main(request):
-    last_login = request.COOKIES.get('last login', 'Belum ada sesi login / Cookie tidak ditemukan')
+    last_login = request.COOKIES.get('last_login', 'Belum ada sesi login / Cookie tidak ditemukan')
     context = {
         "name": "Salma Maharani",
         "npm": "2506586532",
@@ -90,6 +92,7 @@ def show_skills(request):
     context = {
         "name": "Salma Maharani",
         "title_query": title_query,
+        "form": SkillForm(),
     }
     return render(request, "skill.html", context)
 
@@ -110,42 +113,45 @@ def create_skill(request):
 
 def get_skills_json(request):
     title_query = request.GET.get("title", "").strip()
+    
     skills = Skill.objects.prefetch_related('starred_by').all()
 
     if title_query:
-        skills = skills.filter(title__icontains=title_query)
+        skills = skills.filter(name__icontains=title_query)
 
     data = []
     for skill in skills:
         starred_users = skill.starred_by.all()
-        is_starred = request.user in starred_users if request.users.is_authenticated else False
+        is_starred = request.user in starred_users if request.user.is_authenticated else False
         starred_by_names = ", ".join([u.username for u in starred_users])
-
         data.append({
             "pk": str(skill.id),
             "fields": {
-                "title": skill.title,
+                "name": skill.name,
+                "level": skill.level,
                 "description": skill.description,
-                "tech_stack": skill.tech_stack,
-                "skill_url": skill.skill_url,
                 "skill_image_url": skill.skill_image_url,
                 "star_count": starred_users.count(),
                 "is_starred": is_starred,
                 "starred_by_names": starred_by_names,
-
             }
         })
 
     return JsonResponse(data, safe=False)
 
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
+from .models import Skill
+
+@login_required
 def delete_skill(request, skill_id):
-   skill = get_object_or_404(Skill, pk=skill_id)
-   if not request.user.is_superuser:
-           raise PermissionDenied
-   if request.method == "POST":
-        skill.delete()
-        messages.success(request, "Skill berhasil dihapus!")
-        return redirect("main:show_skills")
+    if not request.user.is_superuser:
+        return redirect('main:show_skills')
+
+    skill = get_object_or_404(Skill, pk=skill_id)
+    skill.delete()
+    
+    return redirect('main:show_skills')
    
 
 def update_skill(request, id):
@@ -185,6 +191,9 @@ def create_education(request):
     form = EducationForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         form.save()
+        education = form.save(commit=False)
+        education.user = request.user
+        education.save()
         messages.success(request, "Pendidikan baru berhasil ditambahkan!")
         return redirect("main:show_education")
     
@@ -284,3 +293,21 @@ def toggle_star(request, skill_id):
 def is_editor(user):
   return user.groups.filter(name='Editor').exists() or user.is_superuser
 
+
+@require_POST
+def create_skill_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan skill."},
+            status=403,
+        )
+
+    form = SkillForm(request.POST)
+    if form.is_valid():
+        skill = form.save()
+        return JsonResponse(
+            {"message": "Skill berhasil ditambahkan.", "pk": str(skill.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)

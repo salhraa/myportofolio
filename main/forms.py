@@ -1,42 +1,60 @@
 from django.forms import ModelForm, Select, TextInput, Textarea, NumberInput
 from main.models import Skill, Education, Experience
 from django import forms
-
+from django.core.exceptions import ValidationError
+from django.utils.html import strip_tags
 
 class SkillForm(ModelForm):
-
-  class Meta:
-    model = Skill
-    fields = ["name", "level", "description", "skill_image_url"]
-    labels = {
-        "name": "Skill Name",
-        "level": "Proficiency Level",
-        "description": "Skill Description",
-    }
-    widgets = {
-        "name": TextInput(
-            attrs={
-                "placeholder": "Input skill name",
-                "maxlength": 100,
-            }
-        ),
-        "level": Select(
-            attrs={
-                "class": "form-select", 
-            }
-        ),
-        "description": Textarea(
-            attrs={
-                "placeholder": "explain your experience or understanding about this skill...",
-                "rows": 3,
-            }
-        ),
-        'skill_image_url': forms.URLInput(attrs={
+    class Meta:
+        model = Skill
+        fields = ["name", "level", "description", "skill_image_url"]
+        labels = {
+            "name": "Skill Name",
+            "level": "Proficiency Level",
+            "description": "Skill Description",
+        }
+        widgets = {
+            "name": TextInput(
+                attrs={
+                    "placeholder": "Input skill name",
+                    "maxlength": 100,
+                }
+            ),
+            "level": Select(
+                attrs={
+                    "class": "form-select", 
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "placeholder": "explain your experience or understanding about this skill...",
+                    "rows": 3,
+                }
+            ),
+            'skill_image_url': forms.URLInput(attrs={
                 'class': 'skill-search__input', 
                 'placeholder': 'Image link'
             }),
-    }
+        }
 
+    def clean_name(self):
+        name = strip_tags(self.cleaned_data["name"]).strip()
+        if not name:
+            raise ValidationError("Nama skill tidak boleh hanya berisi tag HTML.")
+        return name
+
+    def clean_description(self):
+        description = self.cleaned_data.get("description")
+        if description:
+            return strip_tags(description).strip()
+        return description
+
+    def clean_level(self):
+        level = self.cleaned_data.get("level")
+        if level:
+            return strip_tags(level).strip()
+        return level
+    
 class EducationForm(ModelForm):
     class Meta:
         model = Education
@@ -49,7 +67,7 @@ class EducationForm(ModelForm):
             "description",
         ]
         labels = {
-            "institution": "Institution Nmae",
+            "institution": "Institution Name",
             "degree": "Degree / Academic Level",
             "field_of_study": "Field of Study",
             "start_year": "Enrollment Year",

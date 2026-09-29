@@ -10,34 +10,39 @@
     <section class="experience-section" id="experience">
         <div class="container">
             <span class="section-kicker">My Experience</span>
-            <div class="project-header">
-                <h1>Experience</h1>
-                {% if user.is_superuser %}
-                    <a href="{% url 'main:create_experience' %}" class="button project-add-button">
-                        <span aria-hidden="true">+</span>
-                        Add Experience
-                    </a>
-                {% endif %}
+            
+            <div class="project-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                <h1 style="margin: 0; font-size: 2rem;">Experience</h1>
+                
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+                    {% if user.is_superuser %}
+                        <a href="{% url 'main:create_experience' %}" class="button project-add-button" style="text-decoration: none;">
+                            <span aria-hidden="true">+</span>
+                            Add Experience
+                        </a>
+                    {% endif %}
+                    <button class="button button-secondary" onclick="showToast('Notifikasi Sistem', 'Project berhasil dimuat dengan baik!', 'success')">
+                        Test Toast Notifikasi
+                    </button>
+                </div>
             </div>
-            <button class="button button-secondary" onclick="showToast('Notifikasi Sistem', 'Project berhasil dimuat dengan baik!', 'success')">
-                Test Toast Notifikasi
-            </button>
 
-            <form method="get" action="{% url 'main:show_experience' %}" class="project-search">
+            <form method="get" action="{% url 'main:show_experience' %}" class="project-search" style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 2rem; flex-wrap: wrap;">
                 <input type="search" 
                        name="q" 
                        class="project-search__input" 
                        placeholder="Search experience..." 
                        value="{{ request.GET.q }}"
+                       style="flex: 1; min-width: 240px; padding: 10px 15px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.25); backdrop-filter: blur(10px); color: #111;"
                        aria-label="Cari experience">
                 <button type="submit" class="button">Search</button>
             </form>
 
-            <div class="experience-grid project-grid">
+            <div class="experience-grid project-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
                 {% for experience in experience_list %}
-                    <article class="experience-card">
-                        <div class="experience-card-header">
-                            <span class="experience-category">
+                    <article class="experience-card" style="background: rgba(255, 255, 255, 0.25); border: 2px solid rgba(255, 255, 255, 0.4); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 0.75rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);">
+                        <div class="experience-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="experience-category" style="font-size: 0.85rem; color: #222; font-weight: bold;">
                                 {{ experience.get_category_display }}
                             </span>
                             
@@ -48,14 +53,14 @@
                             {% endif %}
                         </div>
 
-                        <h2>{{ experience.title }}</h2>
-                        <p class="experience-description">
+                        <h2 style="margin: 0; font-size: 1.25rem; color: #111111; font-weight: bold;">{{ experience.title }}</h2>
+                        <p class="experience-description" style="margin: 0; color: #2b2b2b; font-size: 1rem; line-height: 1.5;">
                             {{ experience.description }}
                         </p>
 
-                        <div class="project-card-actions">
-                            <div class="project-actions">
-                                <a href="{% url 'main:update_experience' experience.id %}" class="button">Edit</a>
+                        <div class="project-card-actions" style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(0, 0, 0, 0.15);">
+                            <div class="project-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                                <a href="{% url 'main:update_experience' experience.id %}" class="button" style="font-size: 0.5rem; padding: 6px 10px; text-decoration: none;">Edit</a>
                                 {% if user.is_superuser %}
                                     {% include "components/experience_delete_modal.html" with experience=experience %}
                                 {% endif %}
@@ -64,9 +69,9 @@
                     </article>
                 {% empty %}
                     {% if request.GET.q %}
-                        <p class="empty-state">No matching experience found for the keyword "{{ request.GET.q }}".</p>
+                        <p class="empty-state" style="grid-column: 1 / -1; text-align: center; color: #111;">No matching experience found for the keyword "{{ request.GET.q }}".</p>
                     {% else %}
-                        <p class="empty-state">No experience added yet</p>
+                        <p class="empty-state" style="grid-column: 1 / -1; text-align: center; color: #111;">No experience added yet</p>
                     {% endif %}
                 {% endfor %}
             </div>

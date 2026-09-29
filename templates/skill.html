@@ -10,71 +10,260 @@
             <div class="container">
                 <p class="section-kicker">My Skills</p>
                 
-                <div class="skill-header project-header">
+                <div class="skill-header">
                     <h1>Skills</h1>
                     {% if user.is_superuser %}
-                        <a href="{% url 'main:create_skill' %}" class="button project-add-button btn-pixel">
+                        <button type="button" class="button skill-add-button btn-pixel" popovertarget="add-skill-modal">
                             <span aria-hidden="true">+</span> Add Skill
-                        </a>
+                        </button>
                     {% endif %}
                 </div>
 
-                <form method="get" action="{% url 'main:show_skills' %}" class="skill-search project-search">
+                <form id="skill-search-form" class="skill-search">
                     <input type="search"
+                           id="search-input"
                            name="title"
                            value="{{ title_query }}"
-                           placeholder="Search skill name..."
-                           class="skill-search__input project-search__input"
-                           aria-label="Search skill name">
-                    <button type="submit" class="button btn-pixel">Search</button>
+                           placeholder="Cari berdasarkan nama skill..."
+                           class="skill-search__input"
+                           aria-label="Cari berdasarkan nama skill">
+                    <button type="submit" class="button btn-pixel">Cari</button>
                 </form>
 
-                <div class="experience-grid skill-grid project-grid">
-                    {% for skill in skill_list %}
-                        <article class="experience-card">
-                            {% if skill.skill_image_url %}
-                                <div class="photo-frame">
-                                    <div class="frame-top">
-                                        <span class="dot dot-pink"></span>
-                                        <span class="dot dot-yellow"></span>
-                                        <span class="dot dot-green"></span>
-                                    </div>
-                                    <div class="photo-wrapper">
-                                        <img src="{{ skill.skill_image_url }}" alt="Gambar {{ skill.title }}">
-                                    </div>
-                                </div>
-                            {% endif %}
-
-                            <h2>{{ skill.name }}</h2>
-                            <span class="experience-category">{{ skill.tech_stack }}</span>
-                            
-                            {% if skill.description %}
-                                <p class="experience-description">{{ skill.description }}</p>
-                            {% endif %}
-                            
-                            <div class="skill-card-actions project-card-actions">
-                                <div class="skill-actions project-actions">
-                                    <a href="{% url 'main:update_skill' skill.id %}" class="button">Edit</a>
-                                    {% if skill.skill_url %}
-                                        <a href="{{ skill.skill_url }}" class="button" target="_blank" rel="noopener noreferrer">View Skill</a>
-                                    {% endif %}
-                                    {% include "components/project_star.html" with skill=skill %}
-                                    {% if user.is_superuser %}
-                                        {% include "components/skill_delete_modal.html" with skill=skill %}
-                                    {% endif %}
-                                </div>
-                            </div>
-                            
-                        </article>
-                    {% empty %}
-                        {% if title_query %}
-                            <p class="empty-state">No skill named with "{{ title_query }}".</p>
-                        {% else %}
-                            <p class="empty-state">No skill added yet</p>
-                        {% endif %}
-                    {% endfor %}
+                <div id="loading" class="empty-state" style="display: none;">
+                    <p>Memuat skills...</p>
                 </div>
+
+                <div id="error" class="empty-state" style="display: none;">
+                    <p>Gagal memuat data skills. Silakan coba lagi.</p>
+                </div>
+
+                <div id="empty" class="empty-state" style="display: none;">
+                    <p>Belum ada skill yang ditambahkan atau ditemukan.</p>
+                </div>
+
+                <div id="grid" class="experience-grid skill-grid" style="display: none;"></div>
             </div>
         </section>
     </main>
+
+    {% if user.is_superuser %}
+        {% include "components/skill_form_modal.html" %}
+    {% endif %}
+
+    <script>
+        const BASE_SKILLS_ENDPOINT = "{% url 'main:get_skills_json' %}";
+        const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+        const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+        let skillsAbortController;
+
+        const SEARCH_DEBOUNCE_DELAY = 300;
+        let searchDebounceTimer;
+
+        const loadingState = document.getElementById('loading');
+        const errorState = document.getElementById('error');
+        const emptyState = document.getElementById('empty');
+        const gridContainer = document.getElementById('grid');
+        const searchForm = document.getElementById('skill-search-form');
+        const searchInput = document.getElementById('search-input');
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        }
+
+        function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+            if (loadingState) loadingState.style.display = showLoading ? 'block' : 'none';
+            if (errorState) errorState.style.display = showError ? 'block' : 'none';
+            if (emptyState) emptyState.style.display = showEmpty ? 'block' : 'none';
+            if (gridContainer) gridContainer.style.display = showGrid ? 'grid' : 'none';
+        }
+
+        function buildSkillCardElement(item) {
+            const skill = item.fields;
+            const skillId = item.pk;
+
+            const articleElement = document.createElement('article');
+            articleElement.className = 'skill-card';
+            articleElement.style.cssText = `
+                background: rgba(255, 255, 255, 0.25);
+                border: 2px solid rgba(255, 255, 255, 0.4);
+                border-radius: 12px;
+                padding: 1.5rem;
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            `;
+
+            let imageHtml = '';
+            if (skill.skill_image_url) {
+                imageHtml = `
+                    <div class="photo-frame" style="margin-bottom: 0.5rem;">
+                        <div class="frame-top" style="display: flex; gap: 4px; padding: 4px; background: #222; border-top-left-radius: 6px; border-top-right-radius: 6px;">
+                            <span class="dot dot-pink" style="width: 8px; height: 8px; background: #ff5f56; border-radius: 50%; display: inline-block;"></span>
+                            <span class="dot dot-yellow" style="width: 8px; height: 8px; background: #ffbd2e; border-radius: 50%; display: inline-block;"></span>
+                            <span class="dot dot-green" style="width: 8px; height: 8px; background: #27c93f; border-radius: 50%; display: inline-block;"></span>
+                        </div>
+                        <div class="photo-wrapper" style="background: #000; overflow: hidden; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;">
+                            <img src="${escapeHtml(skill.skill_image_url)}" alt="Gambar ${escapeHtml(skill.name)}" style="width: 100%; height: auto; display: block;">
+                        </div>
+                    </div>
+                `;
+            }
+
+            let editUrl = `/skills/update/${skillId}/`;
+            let deleteUrl = `/skills/${skillId}/delete/`;
+            let starUrl = `/skills/${skillId}/star/`;
+
+            let superuserActions = '';
+            if (IS_SUPERUSER) {
+                superuserActions = `
+                    <a href="${editUrl}" class="button btn-pixel" style="font-size: 0.45rem; padding: 6px 10px; text-decoration: none;">Edit</a>
+                    <a href="${deleteUrl}" class="button btn-pixel" style="font-size: 0.45rem; padding: 6px 10px; background: rgba(225,29,72,0.2); color: #e11d48; border-color: rgba(225,29,72,0.5); text-decoration: none;">Hapus</a>
+                `;
+            }
+
+            let starAction = '';
+            if (IS_AUTHENTICATED) {
+                const isStarred = skill.is_starred;
+                const starButtonClass = isStarred ? "button button-star is-starred btn-pixel" : "button button-star btn-pixel";
+                const starText = isStarred ? "Unstar" : "Star";
+                
+                starAction = `
+                    <form action="${starUrl}" method="post" class="star-form" style="display: inline; margin: 0;">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="${getCookie('csrftoken')}">
+                        <button type="submit" class="${starButtonClass}" style="font-size: 0.45rem; padding: 6px 10px; cursor: pointer;">
+                            <span aria-hidden="true">★</span> ${starText} (${skill.star_count})
+                        </button>
+                    </form>
+                `;
+            } else {
+                starAction = `<span class="star-count" style="font-family: 'Press Start 2P', monospace; font-size: 0.45rem;">★ ${skill.star_count} Stars</span>`;
+            }
+
+            articleElement.innerHTML = `
+                ${imageHtml}
+                <h2 style="margin: 0; font-size: 1.75rem; color: #111111; font-weight: bold;">${escapeHtml(skill.name)}</h2>
+                <span class="skill-category" style="font-size: 1.25rem; color: #222222; font-weight: bold;">Level: ${escapeHtml(skill.level)}</span>
+                <p class="skill-description" style="margin: 0; color: #2b2b2b; font-size: 1.0rem; line-height: 1.5;">${escapeHtml(skill.description || '')}</p>
+                <div class="skill-card-actions" style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(0, 0, 0, 0.15);">
+                    <div class="skill-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                        ${starAction}
+                        ${superuserActions}
+                    </div>
+                </div>
+            `;
+
+            return articleElement;
+        }
+
+        async function fetchSkills(searchQuery = "") {
+            if (skillsAbortController) skillsAbortController.abort();
+            skillsAbortController = new AbortController();
+
+            try {
+                displayPageSection({ showLoading: true });
+                
+                const url = searchQuery ? `${BASE_SKILLS_ENDPOINT}?title=${encodeURIComponent(searchQuery)}` : BASE_SKILLS_ENDPOINT;
+                
+                const response = await fetch(url, {
+                    headers: { 'Accept': 'application/json' },
+                    signal: skillsAbortController.signal,
+                });
+
+                if (!response.ok) throw new Error('Gagal mengambil data');
+
+                const skillData = await response.json();
+
+                if (!skillData || skillData.length === 0) {
+                    displayPageSection({ showEmpty: true });
+                } else {
+                    gridContainer.innerHTML = '';
+                    skillData.forEach(item => {
+                        gridContainer.appendChild(buildSkillCardElement(item));
+                    });
+                    displayPageSection({ showGrid: true });
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') return;
+                console.error('Error loading skills:', error);
+                displayPageSection({ showError: true });
+            }
+        }
+
+        searchInput.addEventListener("input", function() {
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                fetchSkills(searchInput.value.trim());
+            }, SEARCH_DEBOUNCE_DELAY);
+        });
+
+        searchForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            clearTimeout(searchDebounceTimer);
+            fetchSkills(searchInput.value.trim());
+        });
+
+        function closeSkillModal() {
+            const modal = document.getElementById("add-skill-modal");
+            if (modal && typeof modal.hidePopover === "function") {
+                modal.hidePopover();
+            }
+        }
+
+        const CREATE_SKILL_ENDPOINT = "{% url 'main:create_skill_ajax' %}";
+        const skillForm = document.getElementById('skill-form');
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        if (skillForm) {
+            skillForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const submitButton = skillForm.querySelector('button[type="submit"]');
+                if (submitButton) submitButton.disabled = true;
+
+                try {
+                    const response = await fetch(CREATE_SKILL_ENDPOINT, {
+                        method: 'POST',
+                        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                        body: new FormData(skillForm),
+                    });
+
+                    if (response.ok) {
+                        skillForm.reset();
+                        closeSkillModal();
+                        fetchSkills(searchInput.value.trim());
+                    } else {
+                        console.error("Gagal menambahkan skill");
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                } finally {
+                    if (submitButton) submitButton.disabled = false;
+                }
+            });
+        }
+
+        fetchSkills(searchInput.value.trim());
+    </script>
 {% endblock content %}
