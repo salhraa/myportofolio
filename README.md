@@ -39,3 +39,13 @@ Kemudian kita juga diwajibkan untuk menambahkan {% csrf_token %} pada form terse
 Kita perlu melakukan prose serialization pada model django sebelum datanya dikembalikan karena objek yang dihasilkan oleh django orm adalah objek python kompleks, dimana fungsi pencetak JSON tidak tahu cara mengubah objek khusus django jadi teks biasa secara langsung, yang jika dipaksa anpa serialisasi, django akan melempar error TypeErroe : Object of type Portfolio is not JSON serializable. Kemudian, data yang dikirimkan dari server ke browser melalui protokol HTTP harus berbentuk teks biasa (string).
 
 Individual Assignment 3 ini saya kerjakan dengan menggunakan bantuanAI(Gemini), saya menggunakannya untuk: menyelesaikan error yang terjadi saat saya mencoba menambahkan dan menghapus bagian experience dan skill, yaitu CSRF verification error, kemudian saya juga menggunakan AI untuk merapihkan bagian tabel saat mengisi forms. 
+
+
+### Tugas 5
+1. Debouncing adalah tknik di JavaScript untuk memberi jeda waktu sebelum sebuah fungsi dijalankan. Teknik in pentig diterapkan pada fitur pencarian yang menggunakan AJAX karena tanpa debouncing , server bekerja lebih berat dan boros resource, contohnya kalau kita ngetik "pacil"(5 huruf), browser bakal ngirim 6 request sekaligus ke server secara instan di tiap ketikan.
+
+2. fungsi dari penggunaan await ketika kita menguji fetch() yaitu untuk menyutuh JavaScript sabar menunggu sampai proses pegambilan data(fetching) dari server selesai dan hasilnya datang. Yang akan terjadi jika kita tidak menggunakan await adalah JavaScript bakal langsung lanjut ke baris selanjutnya tanpa datanya siap, jadi variabel yang kita harapkan isinya data JSON malah cuma berisi objek promise yang masih pending dan menyebabkan program kita error.
+
+3. XSS (Cross-Site Scripting) adalah celah keamanan yang mana orangbisa masukin scrip berbahaya lewat input form, yang mana bisa tereksekusi di browser pengguna lain, misal untuk mencuri data atau cookie. Data yang ditampilkan melalui AJAX/JavaScript lebih rentan terhadap serangn ini daripada data yang ditapilkan langusung melalui template Django  karena biasnya dengan kedua itu kita memasukkan data ke HTML secara manual, yang mana kalau misal kita lupa bersihin datanya, browser bisa menganggap string dari user itu sebagai kode asli dan langsung mengesekusinya, makanya celah xss jadi lebih gampang jebol.
+
+Individual Assignment 5 ini saya kerjakan dengan menggunakan bantuanAI(Gemini), saya menggunakannya untuk: membantu saya memperbaiki error di saat bagian hapus experience di awal, kemudian saya gunakan untuk memperindah notifikasi toast, dan penggunaan untuk membuat javaScript tambahan di bagian experience.
