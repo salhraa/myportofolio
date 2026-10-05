@@ -129,3 +129,15 @@ class ExperienceForm(forms.ModelForm):
             self.fields['started_at'].required = True
         if 'ended_at' in self.fields:
             self.fields['ended_at'].required = False
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        return strip_tags(title)
+
+    def clean_category(self):
+        category = self.cleaned_data.get('category')
+        return strip_tags(category)
+
+    def clean_description(self):
+        description = self.cleaned_data.get('description')
+        return strip_tags(description)

@@ -27,7 +27,6 @@
                 </div>
             </div>
 
-            <!-- Bagian search, loading, error, empty, dan grid kamu yang sebelumnya... -->
             <form id="experience-search-form" class="project-search" style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 2rem; flex-wrap: wrap;" onsubmit="return false;">
                 <input type="search" 
                        id="search-input"
@@ -68,7 +67,13 @@
             
             <div style="margin-bottom: 1rem;">
                 <label style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: #333;">Category</label>
-                <input type="text" name="category" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+                <select name="category" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; background: #fff; color: #000;">
+                    <option value="" disabled selected>Pilih Category</option>
+
+                    <option value="Work">Work</option>
+                    <option value="Organization">Organization</option>
+                    <option value="Project">Project</option>
+                </select>
             </div>
 
             <div style="margin-bottom: 1rem;">
@@ -76,9 +81,14 @@
                 <textarea name="description" rows="4" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;"></textarea>
             </div>
 
-            <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                <input type="checkbox" name="is_ongoing" id="is_ongoing" style="width: 18px; height: 18px;">
-                <label for="is_ongoing" style="color: #333; font-weight: 500;">Is Ongoing?</label>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: #333;">Started At</label>
+                <input type="date" name="started_at" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: #333;">Ended At (Opsional)</label>
+                <input type="date" name="ended_at" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;">
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
@@ -88,6 +98,8 @@
         </form>
     </div>
 </div>
+
+<div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
 
 <script>
     const BASE_EXPERIENCE_ENDPOINT = "{% url 'main:get_experience_json' %}";
@@ -105,6 +117,33 @@
     const openModalBtn = document.getElementById('open-modal-btn');
     const closeModalBtn = document.getElementById('close-modal');
     const addExperienceForm = document.getElementById('add-experience-form');
+
+    function showToast(title, message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            background: ${type === 'success' ? '#27c93f' : '#e11d48'};
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 250px;
+            transition: opacity 0.3s ease;
+        `;
+        toast.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(message)}</span>`;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
 
     if (openModalBtn) {
         openModalBtn.addEventListener('click', (e) => {
@@ -141,17 +180,21 @@
             if (response.status === 201) {
                 modal.style.display = 'none';
                 addExperienceForm.reset();
-                fetchExperiences(); // Refresh grid otomatis tanpa reload halaman
-                showToast('Sukses', 'Experience baru berhasil ditambahkan!', 'success');
+                fetchExperiences(); 
+                showToast('Sukses 🎉', 'Experience baru berhasil ditambahkan!', 'success');
             } else if (response.status === 400) {
                 const data = await response.json();
-                console.error('Validation errors:', data.errors);
-                alert('Gagal menambahkan data, periksa kembali input Anda.');
+                let errorMsg = 'Periksa kembali input Anda.';
+                if (data.errors) {
+                    errorMsg = Object.values(data.errors).flat().join(', ');
+                }
+                showToast('Gagal Validasi ⚠️', errorMsg, 'error');
             } else if (response.status === 403) {
-                alert('Anda tidak memiliki hak akses (bukan superuser).');
+                showToast('Akses Ditolak 🚫', 'Anda tidak memiliki hak akses (bukan superuser).', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
+            showToast('Error ❌', 'Terjadi kesalahan pada jaringan atau server.', 'error');
         }
     });
 
@@ -190,9 +233,12 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         `;
 
-        let statusBadge = exp.is_ongoing 
-            ? '<span class="experience-status badge-ongoing" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: #27c93f; color: #fff;">Ongoing</span>'
-            : '<span class="experience-status badge-done" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: #666; color: #fff;">Done</span>';
+        let dateRange = escapeHtml(exp.started_at || '');
+        if (exp.ended_at) {
+            dateRange += ` - ${escapeHtml(exp.ended_at)}`;
+        } else {
+            dateRange += ` - Present`;
+        }
 
         let superuserActions = '';
         if (IS_SUPERUSER) {
@@ -217,7 +263,7 @@
                 <span class="experience-category" style="font-size: 0.85rem; color: #222; font-weight: bold;">
                     ${escapeHtml(exp.category || '')}
                 </span>
-                ${statusBadge}
+                <span style="font-size: 0.75rem; color: #444;">${dateRange}</span>
             </div>
 
             <h2 style="margin: 0; font-size: 1.25rem; color: #111111; font-weight: bold;">${escapeHtml(exp.title)}</h2>
