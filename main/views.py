@@ -87,6 +87,26 @@ def delete_experience(request, experience_id):
         return redirect('main:show_experience')
     return redirect('main:show_experience')
 
+def get_experience_json(request):
+    query = request.GET.get("q", "").strip()
+    experiences = Experience.objects.all()
+    if query:
+        experiences = experiences.filter(title__icontains=query)
+    
+    data = []
+    for exp in experiences:
+        data.append({
+            "pk": str(exp.id),
+            "fields": {
+                "title": exp.title,
+                "description": exp.description,
+                "category": exp.get_category_display() if hasattr(exp, 'get_category_display') else exp.category,
+                "is_ongoing": exp.is_ongoing,
+            }
+        })
+    return JsonResponse(data, safe=False)
+                 
+
 def show_skills(request):
     title_query = request.GET.get("title", "").strip()
     context = {

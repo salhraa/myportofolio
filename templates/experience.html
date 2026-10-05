@@ -27,55 +27,161 @@
                 </div>
             </div>
 
-            <form method="get" action="{% url 'main:show_experience' %}" class="project-search" style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 2rem; flex-wrap: wrap;">
+            <form id="experience-search-form" class="project-search" style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 2rem; flex-wrap: wrap;" onsubmit="return false;">
                 <input type="search" 
+                       id="search-input"
                        name="q" 
                        class="project-search__input" 
                        placeholder="Search experience..." 
-                       value="{{ request.GET.q }}"
                        style="flex: 1; min-width: 240px; padding: 10px 15px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.25); backdrop-filter: blur(10px); color: #111;"
                        aria-label="Cari experience">
                 <button type="submit" class="button">Search</button>
             </form>
 
-            <div class="experience-grid project-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-                {% for experience in experience_list %}
-                    <article class="experience-card" style="background: rgba(255, 255, 255, 0.25); border: 2px solid rgba(255, 255, 255, 0.4); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 0.75rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);">
-                        <div class="experience-card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                            <span class="experience-category" style="font-size: 0.85rem; color: #222; font-weight: bold;">
-                                {{ experience.get_category_display }}
-                            </span>
-                            
-                            {% if experience.is_ongoing %}
-                                <span class="experience-status badge-ongoing">Ongoing</span>
-                            {% else %}
-                                <span class="experience-status badge-done">Done</span>
-                            {% endif %}
-                        </div>
-
-                        <h2 style="margin: 0; font-size: 1.25rem; color: #111111; font-weight: bold;">{{ experience.title }}</h2>
-                        <p class="experience-description" style="margin: 0; color: #2b2b2b; font-size: 1rem; line-height: 1.5;">
-                            {{ experience.description }}
-                        </p>
-
-                        <div class="project-card-actions" style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(0, 0, 0, 0.15);">
-                            <div class="project-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                                <a href="{% url 'main:update_experience' experience.id %}" class="button" style="font-size: 0.5rem; padding: 6px 10px; text-decoration: none;">Edit</a>
-                                {% if user.is_superuser %}
-                                    {% include "components/experience_delete_modal.html" with experience=experience %}
-                                {% endif %}
-                            </div>
-                        </div>
-                    </article>
-                {% empty %}
-                    {% if request.GET.q %}
-                        <p class="empty-state" style="grid-column: 1 / -1; text-align: center; color: #111;">No matching experience found for the keyword "{{ request.GET.q }}".</p>
-                    {% else %}
-                        <p class="empty-state" style="grid-column: 1 / -1; text-align: center; color: #111;">No experience added yet</p>
-                    {% endif %}
-                {% endfor %}
+            <div id="loading" class="empty-state" style="display: none; grid-column: 1 / -1; text-align: center; padding: 2rem; color: #111;">
+                <p>Memuat pengalaman...</p>
             </div>
+
+            <div id="error" class="empty-state" style="display: none; grid-column: 1 / -1; text-align: center; padding: 2rem; color: #e11d48;">
+                <p>Gagal memuat data experience. Silakan coba lagi.</p>
+            </div>
+
+            <div id="empty" class="empty-state" style="display: none; grid-column: 1 / -1; text-align: center; padding: 2rem; color: #111;">
+                <p>Belum ada experience yang ditambahkan atau ditemukan.</p>
+            </div>
+
+            <div id="grid" class="experience-grid project-grid" style="display: none; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;"></div>
         </div>
     </section>
 </main>
+
+<script>
+    const BASE_EXPERIENCE_ENDPOINT = "{% url 'main:get_education_json' %}"; // Ganti dengan endpoint json experience kamu (misal: get_experience_json)
+    const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+    let experienceAbortController;
+
+    const loadingState = document.getElementById('loading');
+    const errorState = document.getElementById('error');
+    const emptyState = document.getElementById('empty');
+    const gridContainer = document.getElementById('grid');
+    const searchInput = document.getElementById('search-input');
+    const searchForm = document.getElementById('experience-search-form');
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+    function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+        if (loadingState) loadingState.style.display = showLoading ? 'block' : 'none';
+        if (errorState) errorState.style.display = showError ? 'block' : 'none';
+        if (emptyState) emptyState.style.display = showEmpty ? 'block' : 'none';
+        if (gridContainer) gridContainer.style.display = showGrid ? 'grid' : 'none';
+    }
+
+    function buildExperienceCardElement(item) {
+        const exp = item.fields;
+        const expId = item.pk;
+
+        const articleElement = document.createElement('article');
+        articleElement.className = 'experience-card';
+        articleElement.style.cssText = `
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        `;
+
+        let statusBadge = exp.is_ongoing 
+            ? '<span class="experience-status badge-ongoing" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: #27c93f; color: #fff;">Ongoing</span>'
+            : '<span class="experience-status badge-done" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: #666; color: #fff;">Done</span>';
+
+        let superuserActions = '';
+        if (IS_SUPERUSER) {
+            let editUrl = `/experience/update/${expId}/`;
+            superuserActions = `
+                <div class="project-card-actions" style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(0, 0, 0, 0.15);">
+                    <div class="project-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                        <a href="${editUrl}" class="button" style="font-size: 0.5rem; padding: 6px 10px; text-decoration: none;">Edit</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        articleElement.innerHTML = `
+            <div class="experience-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="experience-category" style="font-size: 0.85rem; color: #222; font-weight: bold;">
+                    ${escapeHtml(exp.category || '')}
+                </span>
+                ${statusBadge}
+            </div>
+
+            <h2 style="margin: 0; font-size: 1.25rem; color: #111111; font-weight: bold;">${escapeHtml(exp.title)}</h2>
+            <p class="experience-description" style="margin: 0; color: #2b2b2b; font-size: 1rem; line-height: 1.5;">
+                ${escapeHtml(exp.description || '')}
+            </p>
+            ${superuserActions}
+        `;
+
+        return articleElement;
+    }
+
+    async function fetchExperiences(searchQuery = "") {
+        if (experienceAbortController) experienceAbortController.abort();
+        experienceAbortController = new AbortController();
+
+        try {
+            displayPageSection({ showLoading: true });
+
+            let url = BASE_EXPERIENCE_ENDPOINT;
+            if (searchQuery) {
+                url += `?q=${encodeURIComponent(searchQuery)}`;
+            }
+
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' },
+                signal: experienceAbortController.signal,
+            });
+
+            if (!response.ok) throw new Error('Gagal mengambil data experience');
+
+            const data = await response.json();
+
+            if (!data || data.length === 0) {
+                displayPageSection({ showEmpty: true });
+            } else {
+                gridContainer.innerHTML = '';
+                data.forEach(item => {
+                    gridContainer.appendChild(buildExperienceCardElement(item));
+                });
+                displayPageSection({ showGrid: true });
+            }
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+            console.error('Error loading experiences:', error);
+            displayPageSection({ showError: true });
+        }
+    }
+
+    searchInput.addEventListener("input", function() {
+        fetchExperiences(searchInput.value.trim());
+    });
+
+    searchForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        fetchExperiences(searchInput.value.trim());
+    });
+
+    fetchExperiences();
+</script>
 {% endblock content %}

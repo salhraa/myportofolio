@@ -4,7 +4,7 @@ from main.views import (
     show_main, show_experience, create_experience, update_experience, delete_experience,
     show_skills, create_skill, update_skill, delete_skill,
     show_education, create_education, update_education, delete_education, get_education_json,
-    get_skills_json, register, login_user, logout_user, toggle_star, create_skill_ajax,
+    get_skills_json, register, login_user, logout_user, toggle_star, create_skill_ajax, get_experience_json,
 )
 
 app_name = "main"
@@ -34,4 +34,5 @@ urlpatterns = [
     path("logout/", logout_user, name="logout"),
 
     path("skillss/add-ajax/", create_skill_ajax, name="create_skill_ajax"),
+    path('create-skill-ajax/', create_skill_ajax, name='create_skill_ajax'),
 ]
