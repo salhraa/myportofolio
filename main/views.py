@@ -85,7 +85,6 @@ def delete_experience(request, experience_id):
         experience.delete()
         messages.success(request, 'Pengalaman berhasil dihapus!')
         return redirect('main:show_experience')
-    return redirect('main:show_experience')
 
 def get_experience_json(request):
     query = request.GET.get("q", "").strip()

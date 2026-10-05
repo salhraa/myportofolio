@@ -109,10 +109,16 @@
         let superuserActions = '';
         if (IS_SUPERUSER) {
             let editUrl = `/experience/update/${expId}/`;
+            let deleteUrl = `/experience/${expId}/delete/`;
+            
             superuserActions = `
                 <div class="project-card-actions" style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid rgba(0, 0, 0, 0.15);">
                     <div class="project-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
                         <a href="${editUrl}" class="button" style="font-size: 0.5rem; padding: 6px 10px; text-decoration: none;">Edit</a>
+                        <form action="${deleteUrl}" method="post" style="display: inline; margin: 0;">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${getCookie('csrftoken')}">
+                            <button type="submit" class="button" style="font-size: 0.5rem; padding: 6px 10px; background: rgba(225,29,72,0.2); color: #e11d48; border-color: rgba(225,29,72,0.5); cursor: pointer;">Hapus</button>
+                        </form>
                     </div>
                 </div>
             `;
